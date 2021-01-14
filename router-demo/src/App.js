@@ -7,7 +7,6 @@ import Pokemon from './components/Pokemon';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  navigate('/types');
   return (
     <div className="App container-fluid">
       <div className="jumbotron"><h1><i className="nes-pokeball"></i> Pok&eacute;dex <i className="nes-pokeball"></i></h1>
