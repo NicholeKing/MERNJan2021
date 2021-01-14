@@ -3,6 +3,13 @@
 ## Here's some handy information for this repo:
 * in your terminal of choice, run `git clone https://github.com/NicholeKing/MERNJan2021.git`
 * cd into the project of your choice
+##### if the project is react only
+1. run `npm install` to install the dependencies of the project
+2. run `npm start` to the get the react server running
+##### if the project is back end only
+* coming soon
+##### if the project is full stack
+* coming next week
 
 ## Here's some handy info about using git in your terminal:
 
