@@ -1,0 +1,270 @@
+//Demo of Mongo Shell
+
+//If you use a DB that does not yet exist, it will create it for you
+> use janDemo
+switched to db janDemo
+
+//Creates a collection (table) in the db being used
+> db.createCollection("demo")
+{ "ok" : 1 }
+
+//Show all collections in that db
+> show collections
+demo
+
+//Insert a new document (row) to your collection
+> db.demo.insert({animal: "Ghost Crab", fact: "They growl using teeth in their stomachs"})
+WriteResult({ "nInserted" : 1 })
+
+//Display results
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+> db.demo.find({animal: "Ghost Crab"})
+{ "_id" : ObjectId("6007170bbab7e96062287070"), "animal" : "Ghost Crab", "fact" : "They growl using teeth in their stomachs" }
+
+//Insert a new Ghost Crab
+> db.demo.insert({animal: "Ghost Crab", fact: "Something else interesting"})
+WriteResult({ "nInserted" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+
+//Searching by a value many entries have will return all entries with that filter
+> db.demo.find({animal: "Ghost Crab"}).pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+
+//Inserting a new entry
+> db.demo.insert({animal: "Mantis Shrimp", fact: "It has the world's fastest punch"})
+WriteResult({ "nInserted" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "animal" : "Mantis Shrimp",
+        "fact" : "It has the world's fastest punch"
+}
+
+//Dangers of updating without $set
+> db.demo.update({animal: "Mantis Shrimp"}, {fact: "It can break your thumb"})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+//Display the missing data
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb"
+}
+
+//Proper update: note, if you forget to close your command, you'll get the ... to let you know, just pass the thing you forgot (in this case a missing parenthesis) and it will run
+> db.demo.update({fact: "It can break your thumb"}, {$set: {animal: "Mantis Shrimp"}}
+... )
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+//Display the fixed version
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp"
+}
+
+//Proper update, plus we can add whatever fields we want without consequence from the other documents
+> db.demo.update({fact: "It can break your thumb"}, {$set: {speed: "50mph"}} )
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph"
+}
+
+//Find by _id
+> db.demo.find({_id: ObjectId("6007170bbab7e96062287070")}).pretty()
+{
+        "_id" : ObjectId("6007170bbab7e96062287070"),
+        "animal" : "Ghost Crab",
+        "fact" : "They growl using teeth in their stomachs"
+}
+
+//Remove one instance of the Ghost Crab, removes the first instance it finds
+> db.demo.remove({animal: "Ghost Crab"}, true)
+WriteResult({ "nRemoved" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph"
+}
+
+//Insert another entry for Ghost Crab
+> db.demo.insert({animal: "Ghost Crab", fact: "dhaskdha"})
+WriteResult({ "nInserted" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("600717d9bab7e96062287071"),
+        "animal" : "Ghost Crab",
+        "fact" : "Something else interesting"
+}
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph"
+}
+{
+        "_id" : ObjectId("60071bb0bab7e96062287073"),
+        "animal" : "Ghost Crab",
+        "fact" : "dhaskdha"
+}
+
+//Removes ALL instances of Ghost Crab
+> db.demo.remove({animal: "Ghost Crab"})
+WriteResult({ "nRemoved" : 2 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph"
+}
+> db.demo.find({animal: "Mantis Shrimp", speed: "50mph"}).pretty()
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph"
+}
+
+//I goofed and forgot I deleted Ghost Crabs...
+> db.demo.find({animal: "Ghost Crab", fact: "dhaskdha"}).pretty()
+
+//Update the mantis shrimp with an array
+> db.demo.update({animal: "Mantis Shrimp"}, {$set: {MoreFacts: ["Something else interesting"]}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph",
+        "MoreFacts" : [
+                "Something else interesting"
+        ]
+}
+
+//Add a new entry to the array in mantis shrimp
+> db.demo.update({animal: "Mantis Shrimp"}, {$push: {MoreFacts: "Even more intersting facts!"}} )
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph",
+        "MoreFacts" : [
+                "Something else interesting",
+                "Even more intersting facts!"
+        ]
+}
+
+//Remove the FIRST entry in the array (use 1 to remove the back)
+> db.demo.update({animal: "Mantis Shrimp"}, {$pop: {MoreFacts: -1}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+//Display
+> db.demo.find().pretty()
+{
+        "_id" : ObjectId("600718fbbab7e96062287072"),
+        "fact" : "It can break your thumb",
+        "animal" : "Mantis Shrimp",
+        "speed" : "50mph",
+        "MoreFacts" : [
+                "Even more intersting facts!"
+        ]
+}
+
+//Leave the shell
+> quit()
